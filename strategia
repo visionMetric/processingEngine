@@ -1,0 +1,8 @@
+1. Przypomnieć sobie C++ 
+
+2. Zapoznać się z OpenCV i znaleść odpowiednie funkcje:
+
+- background subtraction 
+- wykrywanie konturów/krawędzi
+- rozpoznawanie obiektu  / dopasowanie obiektu do wzorca 
+- mierzenie odległości / operacje na macierzach
