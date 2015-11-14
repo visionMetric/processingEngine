@@ -4,5 +4,6 @@
 
 - background subtraction 
 - wykrywanie konturów/krawędzi
-- rozpoznawanie obiektu  / dopasowanie obiektu do wzorca 
+- rozpoznawanie obiektu  / dopasowanie obiektu do wzorca
+- zlokalizowanie konkretnych fragmentów obiektu 
 - mierzenie odległości / operacje na macierzach
