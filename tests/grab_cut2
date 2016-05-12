@@ -1,0 +1,98 @@
+#include "opencv2/opencv.hpp"
+#include <iostream>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <stdio.h>
+
+using namespace cv;
+using namespace std;
+Mat image;
+void GrabCut(int x, int y);
+void onMouse(int event, int x, int y, int flags, void* param)
+{
+    char text[100];
+    Mat img2, img3;
+
+    img2 = image.clone();
+
+    if (event == CV_EVENT_LBUTTONDOWN)
+    {
+        Vec3b p = img2.at<Vec3b>(y,x);
+        sprintf(text, "R=%d, G=%d, B=%d", p[2], p[1], p[0]);
+       // GrabCut(x,y);
+
+    }
+    else if (event == CV_EVENT_RBUTTONDOWN)
+    {
+        cvtColor(image, img3, CV_BGR2HSV);
+        Vec3b p = img3.at<Vec3b>(y,x);
+        sprintf(text, "H=%d, S=%d, V=%d", p[0], p[1], p[2]);
+    }
+    else
+        sprintf(text, "x=%d, y=%d", x, y);
+
+    putText(img2, text, Point(5,15), FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0));
+  //  imshow("Image", img2);
+}
+
+void GrabCut(int x, int y){
+
+	 // define bounding rectangle
+	    int border = 10;
+	    int border2 = border + border;
+	   // cv::Rect rectangle(150,140,image.cols-329,image.rows);
+	    cv::Rect rectangle(500,10,image.cols-870,image.rows-30);
+	    //cv::Rect rectangle(650,55,image.cols-1190,image.rows-660);
+
+
+	    cv::Mat result; // segmentation result (4 possible values)
+	    cv::Mat bgModel,fgModel; // the models (internally used)
+
+	    // GrabCut segmentation
+	    cv::grabCut(image,    // input image
+	        result,   // segmentation result
+	        rectangle,// rectangle containing foreground
+	        bgModel,fgModel, // models
+	        1,        // number of iterations
+	        cv::GC_INIT_WITH_RECT); // use rectangle
+	    // Get the pixels marked as likely foreground
+	    cv::compare(result,cv::GC_PR_FGD,result,cv::CMP_EQ);
+	    // Generate output image
+	    cv::Mat foreground(image.size(),CV_8UC3,cv::Scalar(255,255,255));
+	    image.copyTo(foreground,result); // bg pixels not copied
+
+	    // display result
+	    cv::namedWindow("Segmented Image");
+	    cv::imshow("Segmented Image",foreground);
+	    waitKey(0);
+
+}
+
+int main( )
+{
+    // Open another image
+    image = cv::imread("images/small/fgk.JPG");
+
+    if(! image.data ) // Check for invalid input
+    {
+        cout <<  "Could not open or find the image" << std::endl ;
+        return -1;
+    }
+
+
+    // draw rectangle on original image
+  //  cv::rectangle(image, rectangle, cv::Scalar(255,255,255),1);
+    cv::namedWindow("Image");
+    setMouseCallback("Image", onMouse, 0);
+    cv::imshow("Image",image);
+    GrabCut(1,1);
+    // display result
+   // cv::namedWindow("Segmented Image");
+   // cv::imshow("Segmented Image",foreground);
+
+
+    waitKey();
+    return 0;
+
+}
+
